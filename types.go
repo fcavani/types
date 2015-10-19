@@ -80,11 +80,6 @@ func replacepkgname(in string, t reflect.Type) (out string) {
 }
 
 func nameof(t reflect.Type) (name string) {
-	defer func() {
-		if name == "projects2/web/context.Data" {
-			panic("error")
-		}
-	}()
 	n := t.Name()
 	if t.Kind() == reflect.Interface || n == "" {
 		name = replacepkgname(t.String(), t)
