@@ -50,6 +50,7 @@ func init() {
 	Insert(new(float32))
 	Insert(float64(3.14))
 	Insert(new(float64))
+	Insert(make([]uint8, 0))
 	Insert(time.Time{})
 	Insert(&time.Time{})
 	Insert(time.Duration(0))
