@@ -21,6 +21,7 @@ func init() {
 	typemap = make(map[string]reflect.Type, 100)
 	Insert(errors.New(""))
 	InsertName("os.errorString", errors.New(""))
+	// FIXME: error as errors.errorString is strange.
 	InsertName("error", errors.New(""))
 	Insert("")
 	Insert(new(string))
@@ -54,6 +55,8 @@ func init() {
 	Insert(time.Time{})
 	Insert(&time.Time{})
 	Insert(time.Duration(0))
+	var inter interface{}
+	Insert(inter)
 }
 
 // Dump the name and the type from the type base.
@@ -240,35 +243,29 @@ func isRecursive(v reflect.Value) bool {
 }
 
 //AllocStructPtrs find pointers in a struct and alloc than recursivily.
-func AllocStructPtrs(v reflect.Value) {
-	val := reflect.Indirect(v)
-	t := val.Type()
-
-	if t.Kind() == reflect.Struct {
-		for i := 0; i < t.NumField(); i++ {
+func AllocStructPtrs(val reflect.Value) {
+	switch val.Kind() {
+	case reflect.Struct:
+		for i := 0; i < val.Type().NumField(); i++ {
 			field := val.Field(i)
-			switch field.Type().Kind() {
-			case reflect.Ptr:
-				v := MakeNewType(field.Type(), 0)
-				if isRecursive(v) {
-					//panic(fmt.Sprintf("struct %v have a field of the same type of this struct", NameOf(v.Type())))
-					continue
-				}
-				AllocStructPtrs(v)
-				if field.CanSet() {
-					field.Set(v)
-				}
-			case reflect.Slice:
-				v := MakeNewType(field.Type(), 0)
-				if field.CanSet() {
-					field.Set(v)
-				}
-			default:
-				continue
-			}
+			AllocStructPtrs(field)
+		}
+	case reflect.Ptr:
+		v := MakeNewType(val.Type(), 0)
+		if isRecursive(v) {
+			//panic(fmt.Sprintf("struct %v have a field of the same type of this struct", NameOf(v.Type())))
+			return
+		}
+		AllocStructPtrs(v.Elem())
+		if val.CanSet() {
+			val.Set(v)
+		}
+	case reflect.Slice:
+		v := MakeNewType(val.Type(), 0)
+		if val.CanSet() {
+			val.Set(v)
 		}
 	}
-	return
 }
 
 // Make instantiate a value of t type and allocate pointer and slices.
