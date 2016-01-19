@@ -55,8 +55,6 @@ func init() {
 	Insert(time.Time{})
 	Insert(&time.Time{})
 	Insert(time.Duration(0))
-	var inter interface{}
-	Insert(inter)
 }
 
 // Dump the name and the type from the type base.
