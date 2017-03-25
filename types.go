@@ -236,7 +236,22 @@ func isRecursive(v reflect.Value) bool {
 	}
 	for i := 0; i < ind.Type().NumField(); i++ {
 		ft := ind.Field(i).Type()
-		return ft == t || ft == reflect.PtrTo(t) || t.AssignableTo(ft) || reflect.PtrTo(t).AssignableTo(ft)
+		return ft == t || ft == reflect.PtrTo(t) //|| t.AssignableTo(ft) || reflect.PtrTo(t).AssignableTo(ft)
+	}
+	return false
+}
+
+func isRecursiveType(t reflect.Type) bool {
+	ind := t
+	if t.Kind() == reflect.Ptr {
+		ind = t.Elem()
+	}
+	if ind.Kind() != reflect.Struct {
+		return false
+	}
+	for i := 0; i < ind.NumField(); i++ {
+		ft := ind.Field(i).Type
+		return ft == t || ft == reflect.PtrTo(t)
 	}
 	return false
 }
@@ -251,8 +266,12 @@ func AllocStructPtrs(val reflect.Value) {
 		}
 	case reflect.Ptr:
 		v := MakeNewType(val.Type(), 0)
+		//TODO: Make recursivy better, include val.Type == v.Type....
 		if isRecursive(v) {
 			//panic(fmt.Sprintf("struct %v have a field of the same type of this struct", NameOf(v.Type())))
+			return
+		}
+		if val.Type() == v.Type() {
 			return
 		}
 		AllocStructPtrs(v.Elem())
@@ -261,6 +280,10 @@ func AllocStructPtrs(val reflect.Value) {
 		}
 	case reflect.Slice:
 		v := MakeNewType(val.Type(), 0)
+		elem := v.Type().Elem()
+		if elem.Kind() == reflect.Ptr && elem.Elem() == v.Type() {
+			return
+		}
 		if val.CanSet() {
 			val.Set(v)
 		}
