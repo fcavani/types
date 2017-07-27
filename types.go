@@ -324,8 +324,11 @@ func (d deepcopy) copy(src reflect.Value) (dst reflect.Value) {
 			dst.Index(i).Set(d.copy(src.Index(i)))
 		}
 	case reflect.Chan:
-		dst = reflect.New(src.Type()).Elem()
-		dst.Set(reflect.MakeChan(src.Type(), src.Cap()))
+		// BUG: unidirectional chan dir is no allowed
+		//chanDir := src.Type().ChanDir()
+		chanDir := reflect.BothDir
+		ctype := reflect.ChanOf(chanDir, src.Type().Elem())
+		dst = reflect.MakeChan(ctype, src.Cap())
 	case reflect.Func:
 		dst = src
 	case reflect.Interface:
