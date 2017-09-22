@@ -56,6 +56,7 @@ func init() {
 	Insert(&time.Time{})
 	Insert(time.Duration(0))
 	Insert(make([]string, 0))
+	Insert(struct{}{})
 }
 
 // Dump the name and the type from the type base.
