@@ -5,7 +5,9 @@ go:
 matrix:
   allow_failures:
     - go: tip
+env:
+  GO111MODULE=on
 install:
-  go mod tidy
+  go mod download
 script:
  - go test -v -timeout=15s ./...
