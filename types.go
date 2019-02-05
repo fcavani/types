@@ -23,6 +23,7 @@ func init() {
 	InsertName("os.errorString", errors.New(""))
 	// FIXME: error as errors.errorString is strange.
 	InsertName("error", errors.New(""))
+	InsertName("errors.errorString", errors.New(""))
 	Insert("")
 	Insert(new(string))
 	Insert(int(0))

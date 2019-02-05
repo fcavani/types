@@ -75,7 +75,7 @@ func TestNameOf(t *testing.T) {
 	}
 }
 
-func TestIsert(t *testing.T) {
+func TestInsert(t *testing.T) {
 	for _, typ := range tests {
 		Insert(typ.t)
 	}
