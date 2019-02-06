@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 // Start date:		2010-08-11
 
-// Package types have functions to create an instatiation of one type from the type name.
+// Package types have functions to create an instantiation of one type from the type name.
 package types
 
 import (
